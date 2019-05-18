@@ -7,10 +7,7 @@ import tweepy
 import datetime
 import threading
 
-consumer_key = "6VI23QfbqRsuTjMsp7awFpnB1"
-consumer_key_secret = "V7yej4HoQl0ylH1bv2MejEtPbL6p2yCMY5f3uayyRaGiKpk62h"
-access_token = "1051896704201609216-W2B67NLg6GRnyqd4zMcd3RvFBxOmim" 
-access_token_secret = "8eUJXMLcBzcgYVGMKNUOYH47pm5AUz4CWum1hmRyMxXdL" 
+
 
 auth = tweepy.OAuthHandler(os.environ["key"],os.environ["sec"])
 auth.set_access_token(os.environ["token"],os.environ["token_sec"])
