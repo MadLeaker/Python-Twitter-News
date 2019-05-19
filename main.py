@@ -17,16 +17,15 @@ api = tweepy.API(auth)
 
 def tweet(news):
     canTweet = True
-    if os.path.exists("News.png") and canTweet:
-        media_ids = []
-        now = datetime.datetime.utcnow()
-        date = str(now.day)+"/"+str(now.month)
-        resp = api.media_upload("News.png")
-        media_ids.append(resp.media_id)
-        api.update_status(status="Fortnite BR News " + date,media_ids=media_ids)
-        canTweet = False
-        time.sleep(60)
-
+    if os.path.exists("News.png"):
+        for status in tweepy.Cursor(api.user_timeline,screen_name=api.me().screen_name,tweet_mode="extended").items(1):
+                print(status.full_text)
+        #media_ids = []
+        #now = datetime.datetime.utcnow()
+        #date = str(now.day)+"/"+str(now.month)
+        #resp = api.media_upload("News.png")
+        #media_ids.append(resp.media_id)
+        #api.update_status(status="Fortnite BR News " + date,media_ids=media_ids)
 def set_interval(func, sec): 
     def func_wrapper():
         set_interval(func, sec) 
