@@ -6,23 +6,26 @@ import os
 import tweepy
 import datetime
 import threading
-
-
+import subprocess
+import sys
+import time
 
 auth = tweepy.OAuthHandler(os.environ["key"],os.environ["sec"])
 auth.set_access_token(os.environ["token"],os.environ["token_sec"])
 
 api = tweepy.API(auth)
 
-
-def tweet():
-    if os.path.exists("News.png"):
+def tweet(news):
+    canTweet = True
+    if os.path.exists("News.png") and canTweet:
         media_ids = []
         now = datetime.datetime.utcnow()
         date = str(now.day)+"/"+str(now.month)
         resp = api.media_upload("News.png")
         media_ids.append(resp.media_id)
         api.update_status(status="Fortnite BR News " + date,media_ids=media_ids)
+        canTweet = False
+        time.sleep(60)
 
 def set_interval(func, sec): 
     def func_wrapper():
@@ -60,6 +63,10 @@ def wrap_text(text, width, font):
 
 font1 = ImageFont.truetype("TitleFont.ttf",50)
 font2 = ImageFont.truetype("DescFont.ttf",45)
+
+
+
+
 def writeToFile():
     exists = os.path.isfile("News.json")
     resp = requests.get("https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game")
@@ -70,7 +77,8 @@ def writeToFile():
             newsFile = open("News.json","x")
             newsFile.close()
         newsFile = open("News.json","r")
-        if json.dumps(brNews) not in newsFile.read():
+        data = newsFile.read()
+        if json.dumps(brNews) not in data:
             print("writing")
             newsFile = open("News.json","w")
             newsFile.write(json.dumps(brNews))
@@ -128,4 +136,6 @@ def makeImage(left,mid,right):
     backFile.save("News.png")
     tweet()
     os.remove("News.png")
-set_interval(writeToFile,1)
+
+    
+
