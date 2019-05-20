@@ -15,7 +15,7 @@ auth.set_access_token(os.environ["token"],os.environ["token_sec"])
 
 api = tweepy.API(auth)
 
-def tweet(news):
+def tweet():
         for status in tweepy.Cursor(api.user_timeline,screen_name=api.me().screen_name,tweet_mode="extended").items(1):
                 print(status.full_text)
         #media_ids = []
@@ -136,4 +136,4 @@ def makeImage(left,mid,right):
     os.remove("News.png")
 
     
-set_interval(tweet("LOL"),2)
+set_interval(tweet,2)
