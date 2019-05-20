@@ -74,11 +74,10 @@ def writeToFile():
         if not exists:
             newsFile = open("News.json","x")
             newsFile.close()
-        newsFile = open("News.json","r")
+        newsFile = open("News.json","+")
         data = newsFile.read()
         if json.dumps(brNews) not in data:
             print("writing")
-            newsFile = open("News.json","w")
             newsFile.write(json.dumps(brNews))
             newsFile.close()
             downloadImages()
