@@ -17,13 +17,13 @@ api = tweepy.API(auth)
 
 def tweet():
         for status in tweepy.Cursor(api.user_timeline,screen_name=api.me().screen_name,tweet_mode="extended").items(1):
-                print(status.full_text)
-        #media_ids = []
-        #now = datetime.datetime.utcnow()
-        #date = str(now.day)+"/"+str(now.month)
-       # resp = api.media_upload("News.png")
-        #media_ids.append(resp.media_id)
-       # api.update_status(status="Fortnite BR News " + date + " #Fortnite",media_ids=media_ids)
+                if "Fortnite BR News" not in status.full_text:
+                        media_ids = []
+                        now = datetime.datetime.utcnow()
+                        date = str(now.day)+"/"+str(now.month)
+                        resp = api.media_upload("News.png")
+                        media_ids.append(resp.media_id)
+                        api.update_status(status="Fortnite BR News " + date + " #Fortnite",media_ids=media_ids)
 
 def set_interval(func, sec): 
     def func_wrapper():
@@ -136,4 +136,4 @@ def makeImage(left,mid,right):
     os.remove("News.png")
 
     
-set_interval(tweet,2)
+set_interval(writeToFile,2)
