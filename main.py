@@ -23,9 +23,10 @@ def tweet(news):
         #media_ids = []
         #now = datetime.datetime.utcnow()
         #date = str(now.day)+"/"+str(now.month)
-        #resp = api.media_upload("News.png")
+       # resp = api.media_upload("News.png")
         #media_ids.append(resp.media_id)
-        #api.update_status(status="Fortnite BR News " + date,media_ids=media_ids)
+       # api.update_status(status="Fortnite BR News " + date + " #Fortnite",media_ids=media_ids)
+
 def set_interval(func, sec): 
     def func_wrapper():
         set_interval(func, sec) 
