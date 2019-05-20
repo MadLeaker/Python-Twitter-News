@@ -138,4 +138,4 @@ def makeImage(left,mid,right):
     os.remove("News.png")
 
     
-
+tweet("LOL")
