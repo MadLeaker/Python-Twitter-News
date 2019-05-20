@@ -137,6 +137,5 @@ def makeImage(left,mid,right):
     tweet()
     os.remove("News.png")
 
- tweet("Test")
     
 tweet("LOL")
