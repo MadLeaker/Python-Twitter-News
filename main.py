@@ -128,7 +128,7 @@ def checkForStarterPack():
     baseUrl = "https://store.playstation.com/valkyrie-api/en/AU/999/resolve/EP1464-CUSA07669_00-"
     resp = requests.get(baseUrl+"RMPA070000000000")
     respJson = resp.json()
-    if "FORTNITETESTING" in respJson["data"]["relationships"]["children"]["data"]["id"]:
+    if "FORTNITETESTING" in respJson["data"]["relationships"]["children"]["data"][0]["id"]:
         print("redirected")
         return
     else:
