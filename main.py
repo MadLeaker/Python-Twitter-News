@@ -8,7 +8,6 @@ import threading
 import subprocess
 import sys
 import time
-import schedule
 import requests
 import textwrap
 
