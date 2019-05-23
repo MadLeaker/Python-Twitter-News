@@ -1,6 +1,5 @@
-import requests
 import urllib.request
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image,ImageDraw,ImageFont,ImageColor,ImageEnhance
 import json
 import os
 import tweepy
@@ -9,61 +8,57 @@ import threading
 import subprocess
 import sys
 import time
+import schedule
+import requests
+import textwrap
+
 
 auth = tweepy.OAuthHandler(os.environ["key"],os.environ["sec"])
 auth.set_access_token(os.environ["token"],os.environ["token_sec"])
 
 api = tweepy.API(auth)
 
-def tweet():
+def tweet(tweetText,image):
         for status in tweepy.Cursor(api.user_timeline,screen_name=api.me().screen_name,tweet_mode="extended").items(1):
-                if "Fortnite BR News" not in status.full_text:
+                if tweetText not in status.full_text:
                         media_ids = []
-                        now = datetime.datetime.utcnow()
-                        date = str(now.day)+"/"+str(now.month)
-                        resp = api.media_upload("News.png")
+                        #now = datetime.datetime.utcnow()
+                        #date = str(now.day)+"/"+str(now.month)
+                        resp = api.media_upload(image)
                         media_ids.append(resp.media_id)
-                        api.update_status(status="Fortnite BR News " + date + " #Fortnite",media_ids=media_ids)
-
-def set_interval(func, sec): 
-    def func_wrapper():
-        set_interval(func, sec) 
-        func()  
-    t = threading.Timer(sec, func_wrapper)
-    t.start()
-    return t
-
-
-def wrap_text(text, width, font):
-    text_lines = []
-    text_line = []
-    text = text.replace('\n', ' [br] ')
-    words = text.split()
-    font_size = font.getsize(text)
-
-    for word in words:
-        if word == '[br]':
-            text_lines.append(' '.join(text_line))
-            text_line = []
-            continue
-        text_line.append(word)
-        w, h = font.getsize(' '.join(text_line))
-        if w > width:
-            text_line.pop()
-            text_lines.append(' '.join(text_line))
-            text_line = [word]
-
-    if len(text_line) > 0:
-        text_lines.append(' '.join(text_line))
-
-    return text_lines
-
-
-font1 = ImageFont.truetype("TitleFont.ttf",50)
-font2 = ImageFont.truetype("DescFont.ttf",45)
+                        api.update_status(status=tweetText + " #Fortnite",media_ids=media_ids)
 
 
 
+
+def text_wrap(text, font, max_width):
+    lines = []
+    # If the width of the text is smaller than image width
+    # we don't need to split it, just add it to the lines array
+    # and return
+    if font.getsize(text)[0] <= max_width:
+        lines.append(text) 
+    else:
+        # split the line by spaces to get words
+        words = text.split(' ')  
+        i = 0
+        # append every word to a line while its width is shorter than image width
+        while i < len(words):
+            line = ''         
+            while i < len(words) and font.getsize(line + words[i])[0] <= max_width:                
+                line = line + words[i] + " "
+                i += 1
+            if not line:
+                line = words[i]
+                i += 1
+            # when the line gets longer than the max width do not append the word, 
+            # add the line to the lines array
+            lines.append(line)    
+    return lines
+
+
+font1 = ImageFont.truetype("TitleFont.ttf",45)
+font2 = ImageFont.truetype("DescFont.ttf",30)
 
 def writeToFile():
     exists = os.path.isfile("News.json")
@@ -74,7 +69,7 @@ def writeToFile():
         if not exists:
             newsFile = open("News.json","x")
             newsFile.close()
-        newsFile = open("News.json","+")
+        newsFile = open("News.json","r+")
         data = newsFile.read()
         if json.dumps(brNews) not in data:
             print("writing")
@@ -104,35 +99,43 @@ def makeImage(left,mid,right):
     midFile = Image.open("Mid.png")
     rightFile = Image.open("Right.png")
     backFile = Image.open("ImageBackground.png")
-    leftFile.thumbnail((600,337.5),Image.ANTIALIAS)
-    midFile.thumbnail((600,337.5),Image.ANTIALIAS)
-    rightFile.thumbnail((600,337.5),Image.ANTIALIAS)
-    backFile.paste(leftFile,(14,314))
-    backFile.paste(midFile,(660,314))
-    backFile.paste(rightFile,(1308,314))
+    rectangle = Image.new("RGBA",(555,766),(99,99,99,210))
+    rectangle1 = rectangle.copy()
+    rect1Draw = ImageDraw.ImageDraw(rectangle1)
+    line1 = text_wrap(left["body"],font2,rectangle1.size[0])
+    rectangle1.save("Test.png")
+    resizedLeft = leftFile.resize((555,265),Image.ANTIALIAS)
+    resizedMid = midFile.resize((555,265),Image.ANTIALIAS)
+    resizedRight = rightFile.resize((555,265),Image.ANTIALIAS)
+    backFile.paste(resizedLeft,(36,285))
+    backFile.paste(resizedMid,(684,285))
+    backFile.paste(resizedRight,(1335,285))
     d = ImageDraw.ImageDraw(backFile)
-    d.multiline_text((14+offset,652),left["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
-    d.multiline_text((660+offset,652),mid["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
-    d.multiline_text((1308+offset,652),right["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
-    line_height = font2.getsize('hg')[1]
-    lines1 = wrap_text(left["body"],650,font2)
-    lines2 = wrap_text(mid["body"],650,font2)
-    lines3 = wrap_text(right["body"],650,font2)
-    left_coords = [14+(offset/2),735]
-    mid_coords = [660+(offset/2),735]
-    right_coords = [1308+(offset/2),735]
-    for line in lines1:
-        d.text((left_coords[0],left_coords[1]),line,(0,0,0),font2)
-        left_coords[1] = left_coords[1] + line_height
-    for line in lines2:
-        d.text((mid_coords[0],mid_coords[1]),line,(0,0,0),font2)
-        mid_coords[1] = mid_coords[1] + line_height
-    for line in lines3:
-        d.text((right_coords[0],right_coords[1]),line,(0,0,0),font2)
-        right_coords[1] = right_coords[1] + line_height
-    backFile.save("News.png")
-    tweet()
-    os.remove("News.png")
-
+    d.text((36,549),left["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
+    d.text((684,549),mid["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
+    d.text((1335,549),right["title"],fill=(0,0,0),font=font1,anchor=None,spacing=4,align="center")
+    d.multiline_text((36,667),left["body"],fill="black",font=font2)
+    d.multiline_text((684,667),left["body"],fill="black",font=font2)
+    d.multiline_text((1335,667),left["body"],fill="black",font=font2)
+   
     
-set_interval(writeToFile,2)
+    backFile.save("News.png")
+    #tweet()
+    #os.remove("News.png")
+    
+
+def checkForStarterPack():
+    baseUrl = "https://store.playstation.com/valkyrie-api/en/AU/999/resolve/EP1464-CUSA07669_00-"
+    resp = requests.get(baseUrl+"RMPA060000000000")
+    if "FORTNITETESTING" in resp.url:
+        print("redirected")
+    else:
+        respJson = resp.json()
+        image = respJson["included"][0]["attributes"]["thumbnail-url-base"]
+        desc = respJson["included"][0]["attributes"]["long-description"]
+        desc = desc.replace("<br>","").split("V-Bucks")
+        urllib.request.urlretrieve(image,"StarterPack.png")
+        finishedDesc = desc[0].replace(":-",":\n-").replace("600","600 Vbucks")+desc[1].replace("-","\n-")
+        tweet(finishedDesc,"StarterPack.png")
+if __name__ == "__main__":
+    checkForStarterPack()
