@@ -136,5 +136,5 @@ def checkForStarterPack():
         urllib.request.urlretrieve(image,"StarterPack.png")
         finishedDesc = desc[0].replace(":-",":\n-").replace("600","600 Vbucks")+desc[1].replace("-","\n-")
         tweet(finishedDesc,"StarterPack.png")
-if __name__ == "__main__":
-    checkForStarterPack()
+
+checkForStarterPack()
