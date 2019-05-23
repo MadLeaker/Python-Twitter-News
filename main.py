@@ -127,10 +127,11 @@ def makeImage(left,mid,right):
 def checkForStarterPack():
     baseUrl = "https://store.playstation.com/valkyrie-api/en/AU/999/resolve/EP1464-CUSA07669_00-"
     resp = requests.get(baseUrl+"RMPA070000000000")
-    if "FORTNITETESTING" in resp.url:
+    respJson = resp.json()
+    if "FORTNITETESTING" in respJson["data"]["relationships"]["children"]["data"]["id"]:
         print("redirected")
+        return
     else:
-        respJson = resp.json()
         image = respJson["included"][0]["attributes"]["thumbnail-url-base"]
         desc = respJson["included"][0]["attributes"]["long-description"]
         desc = desc.replace("<br>","").split("V-Bucks")
