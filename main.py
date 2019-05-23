@@ -126,7 +126,7 @@ def makeImage(left,mid,right):
 
 def checkForStarterPack():
     baseUrl = "https://store.playstation.com/valkyrie-api/en/AU/999/resolve/EP1464-CUSA07669_00-"
-    resp = requests.get(baseUrl+"RMPA060000000000")
+    resp = requests.get(baseUrl+"RMPA070000000000")
     if "FORTNITETESTING" in resp.url:
         print("redirected")
     else:
