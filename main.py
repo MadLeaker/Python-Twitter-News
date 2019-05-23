@@ -10,6 +10,7 @@ import sys
 import time
 import requests
 import textwrap
+import schedule
 
 
 auth = tweepy.OAuthHandler(os.environ["key"],os.environ["sec"])
@@ -136,5 +137,10 @@ def checkForStarterPack():
         urllib.request.urlretrieve(image,"StarterPack.png")
         finishedDesc = desc[0].replace(":-",":\n-").replace("600","600 Vbucks")+desc[1].replace("-","\n-")
         tweet(finishedDesc,"StarterPack.png")
+        schedule.clear("bot-tasks")
 
-checkForStarterPack()
+schedule.every(1).seconds.do(checkForStarterPack).tag("bot-tasks")
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
