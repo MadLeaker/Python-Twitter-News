@@ -126,7 +126,7 @@ def makeImage(left,mid,right):
     
 
 def checkForStarterPack():
-    baseUrl = "https://store.playstation.com/valkyrie-api/en/AU/999/resolve/EP1464-CUSA07669_00-"
+    baseUrl = "https://store.playstation.com/valkyrie-api/en/US/999/resolve/UP1477-CUSA07022_00-"
     resp = requests.get(baseUrl+"RMPA070000000000").json()
     if "FORTNITETESTING" in resp["data"]["relationships"]["children"]["data"][0]["id"]:
         print("redirected")
@@ -137,7 +137,7 @@ def checkForStarterPack():
         desc = desc.replace("<br>","").split("V-Bucks")
         urllib.request.urlretrieve(image,"StarterPack.png")
         finishedDesc = desc[0].replace(":-",":\n-").replace("600","600 V-Bucks")+desc[1].replace("-","\n-")
-        tweet(finishedDesc,"StarterPack.png")
+        tweet("The new starter pack is now released in USA!" + finishedDesc,"StarterPack.png")
         schedule.clear("bot-tasks")
 
 schedule.every(1).seconds.do(checkForStarterPack).tag("bot-tasks")
