@@ -137,7 +137,7 @@ def checkForStarterPack():
         desc = desc.replace("<br>","").split("V-Bucks")
         urllib.request.urlretrieve(image,"StarterPack.png")
         finishedDesc = desc[0].replace(":-",":\n-").replace("600","600 V-Bucks")+desc[1].replace("-","\n-")
-        tweet("The new starter pack is now released in USA!" + finishedDesc,"StarterPack.png")
+        tweet("The new starter pack is now released in USA!\n" + finishedDesc,"StarterPack.png")
         schedule.clear("bot-tasks")
 
 schedule.every(1).seconds.do(checkForStarterPack).tag("bot-tasks")
