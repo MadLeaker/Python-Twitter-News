@@ -2,3 +2,4 @@ tweepy
 Pillow
 requests
 schedule
+pyquery
