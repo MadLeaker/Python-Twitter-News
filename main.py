@@ -27,7 +27,7 @@ def tweet(tweetText,image):
                         #date = str(now.day)+"/"+str(now.month)
                         resp = api.media_upload(image)
                         media_ids.append(resp.media_id)
-                        api.update_status(status=tweetText + " #Fortnite" + "\n\nIf the starter pack wasnt released yet, It will be released in 24-48 hours!",media_ids=media_ids)
+                        api.update_status(status=tweetText + " #Fortnite" + "\n\nIf the starter pack wasnt released yet in your country, then just wait for it to release!",media_ids=media_ids)
 
 
 
